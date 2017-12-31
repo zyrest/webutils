@@ -1,0 +1,36 @@
+group = 'xyz.zhouying'
+version = '1.0.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+buildscript {
+	ext {
+		springBootVersion = '1.5.9.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+repositories {
+	mavenCentral()
+	jcenter()
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web',
+			'com.alibaba:fastjson:1.2.44',
+			'org.apache.httpcomponents:httpclient',
+            'org.apache.httpcomponents:httpmime'
+	)
+	compileOnly('org.projectlombok:lombok')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}

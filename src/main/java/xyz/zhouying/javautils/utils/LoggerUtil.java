@@ -69,7 +69,7 @@ public class LoggerUtil {
      * @param message	输出信息
      * @param e			异常类
      */
-    public static void error(Class<?> clazz , String message, Exception e){
+    public static void error(Class<?> clazz, Exception e, String message) {
         Logger logger = Logger.getLogger(clazz);
 
         if(null == e){
@@ -84,8 +84,8 @@ public class LoggerUtil {
      * @param clazz  	目标.Class
      * @param message	输出信息
      */
-    public static void error(Class<?> clazz , String message){
-        error(clazz, message, null);
+    public static void error(Class<?> clazz, String message){
+        error(clazz, null, message);
     }
     /**
      * 异常填充值输出
@@ -100,7 +100,7 @@ public class LoggerUtil {
         if(null != value && value.length != 0)
             fmtString = String.format(fmtString, value);
 
-        error(clazz, fmtString, e);
+        error(clazz, e, fmtString);
     }
     /**
      * 异常填充值输出

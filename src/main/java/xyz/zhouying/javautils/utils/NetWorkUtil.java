@@ -19,7 +19,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.CharsetUtils;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
@@ -36,10 +35,20 @@ import java.security.cert.X509Certificate;
  */
 public class NetWorkUtil {
 
-    private static Logger logger = Logger.getLogger(NetWorkUtil.class);
+    private static Class CLASS = NetWorkUtil.class;
 
-    public static JSONObject doGetUri(String uri) {
-        logger.info("do get the " + uri);
+    public static JSONObject doGetReturnJson(String uri) {
+
+        return JSON.parseObject(doGet(uri));
+    }
+
+    public static String doGetReturnPlainText(String uri) {
+
+        return doGet(uri);
+    }
+
+    private static String doGet(String uri) {
+        LoggerUtil.info(CLASS, "do get the " + uri);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet get = new HttpGet(uri);
@@ -58,39 +67,40 @@ public class NetWorkUtil {
             CloseableHttpResponse response = httpClient.execute(get);
 
             if (response.getStatusLine().getStatusCode() == 200) {
-                result = EntityUtils.toString(response.getEntity(), "UTF-8");/** 设置utf-8字符集，否则请求微信数据可能会出现中文乱码 */
-                logger.info("got response : " + result);
+                /* 设置utf-8字符集，否则请求微信数据可能会出现中文乱码 */
+                result = EntityUtils.toString(response.getEntity(), "UTF-8");
+                LoggerUtil.info(CLASS, "got response : " + result);
             } else {
-                logger.info("something wrong happened");
+                LoggerUtil.fmtInfo(CLASS,
+                        "something wrong happened, error code is %s\n error message is %s",
+                        response.getStatusLine().getStatusCode(),
+                        response.getStatusLine().getReasonPhrase());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassCastException e) {
-            logger.info("the response is not JSON");
-            e.printStackTrace();
+        } catch (Exception e) {
+            LoggerUtil.fmtError(CLASS, e, "Wrong on get %s, message -> {%s}", uri, e.getMessage());
         } finally {
             try {
                 httpClient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LoggerUtil.debug(CLASS, "unable to close httpclient!");
             }
         }
 
-        return JSON.parseObject(result);
+        return result;
     }
 
-    public static JSONObject doPostUriReturnJson(String uri, String params) {
+    public static JSONObject doPostReturnJson(String uri, String params) {
         String result = doPost(uri, params);
         return JSON.parseObject(result);
     }
 
-    public static String doPostUriReturnPlainText(String uri, String params) {
+    public static String doPostReturnPlainText(String uri, String params) {
 
         return doPost(uri, params);
     }
 
-    private static String doPost(String uri,String params) {
-        logger.info("do post the " + uri);
+    private static String doPost(String uri, String params) {
+        LoggerUtil.info(CLASS, "do post the " + uri);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost post = new HttpPost(uri);
@@ -106,17 +116,18 @@ public class NetWorkUtil {
         String result = "";
 
         try {
-            post.setEntity(new StringEntity(params, "UTF-8"));/** 设置utf-8字符集，否则请求微信数据可能会出现中文乱码 */
+            /* 设置utf-8字符集，否则请求微信数据可能会出现中文乱码 */
+            post.setEntity(new StringEntity(params, "UTF-8"));
             CloseableHttpResponse response = httpClient.execute(post);
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 result = EntityUtils.toString(response.getEntity(), "UTF-8");
-                logger.info("got response : " + result);
+                LoggerUtil.info(CLASS, "got response : " + result);
             } else {
-                logger.info("something wrong happened,error code is " + response.getStatusLine().getStatusCode());
+                LoggerUtil.info(CLASS, "something wrong happened, error code is " + response.getStatusLine().getStatusCode());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LoggerUtil.fmtError(CLASS, e, "Wrong on get %s, message -> {%s}", uri, e.getMessage());
         } finally {
             try {
                 httpClient.close();
@@ -133,7 +144,6 @@ public class NetWorkUtil {
      * @param url           远程接收文件的地址
      * @param localFilePath 本地文件地址
      * @return
-     * @throws IOException
      */
     public static JSONObject uploadFile(String url, String localFilePath, String propertyName) {
 
@@ -172,7 +182,7 @@ public class NetWorkUtil {
                     .setCharset(CharsetUtils.get("UTF-8"))
                     .build();
 
-            LoggerUtil.fmtDebug(NetWorkUtil.class, "上传文件体：length，%s type，%s charset，%s", reqEntity.getContentLength(), reqEntity.getContentType(), reqEntity.getContentEncoding());
+            LoggerUtil.fmtDebug(CLASS, "上传文件体：length，%s type，%s charset，%s", reqEntity.getContentLength(), reqEntity.getContentType(), reqEntity.getContentEncoding());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -193,32 +203,31 @@ public class NetWorkUtil {
 
             if (statusCode == 200) {
                 result = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-                logger.info("got response : " + result);
+                LoggerUtil.info(CLASS, "got response : " + result);
             } else {
-                logger.info("something wrong happened,error code is " + statusCode);
+                LoggerUtil.info(CLASS, "something wrong happened,error code is " + statusCode);
             }
         } catch (Exception e) {
-            LoggerUtil.error(NetWorkUtil.class, "发送请求失败");
+            LoggerUtil.error(CLASS, "发送请求失败");
         } finally {
 
             if (httpResponse != null) {
                 try {
                     httpResponse.close();
                 } catch (Exception e) {
-                    LoggerUtil.error(NetWorkUtil.class, "关闭httpResponse时出现错误", e);
+                    LoggerUtil.error(CLASS, e, "关闭httpResponse时出现错误");
                 }
             }
             if (httpClient != null) {
                 try {
                     httpClient.close();
                 } catch (Exception e) {
-                    LoggerUtil.error(NetWorkUtil.class, "关闭httpClient时出现错误", e);
+                    LoggerUtil.error(CLASS, e, "关闭httpClient时出现错误");
                 }
             }
         }
 
         return JSON.parseObject(result);
     }
-
 
 }

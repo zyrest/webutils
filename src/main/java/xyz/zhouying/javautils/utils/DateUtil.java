@@ -41,7 +41,7 @@ public class DateUtil {
      * @param addNum 要推迟的天数
      * @return 推迟之后的日期
      */
-    public static Date dateAdd(Date baseDate, int addNum) {
+    public static Date dateAddDay(Date baseDate, int addNum) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(baseDate);
         calendar.add(Calendar.DATE, addNum);//把日期往后增加addNum天.整数往后推,负数往前移动
@@ -84,13 +84,12 @@ public class DateUtil {
         long time2 = two.getTime();
         long diff ;
 
-        if(time1 < time2) {
+        if(time1 < time2)
             diff = time2 - time1;
-        } else {
+        else
             diff = time1 - time2;
-        }
-        days = diff / (1000 * 60 * 60 * 24);
 
+        days = diff / (1000 * 60 * 60 * 24);
         return days;
     }
 

@@ -11,25 +11,31 @@ import xyz.zhouying.javautils.advice.vo.MessageVo;
 public class MessageVoUtil {
     public static MessageVo success() {
         MessageVo m = new MessageVo();
+
         m.setStatus(ResponseStatus.SUCCESS);
         m.setMessage("success");
+
         return m;
     }
 
     public static MessageVo success(Object data) {
         MessageVo messageVo = new MessageVo();
+
         messageVo.setStatus(ResponseStatus.SUCCESS);
         messageVo.setMessage("success");
         messageVo.setData(data);
+
         return messageVo;
     }
 
     public static MessageVo success(String redirectUrl, Object data) {
         MessageVo messageVo = new MessageVo();
+
         messageVo.setStatus(ResponseStatus.SUCCESS);
         messageVo.setMessage("success");
         messageVo.setData(data);
         messageVo.setRedirectUrl(redirectUrl);
+
         return messageVo;
     }
 }

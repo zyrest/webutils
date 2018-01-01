@@ -90,10 +90,10 @@ public class FileUtil {
 
         //MultipartFile自带的解析方法
         file.transferTo(savedFile);
-        LoggerUtil.info(CLASS, "savedFile is : " + savedFile.getPath());
+        LoggerUtil.fmtInfo(CLASS, "savedFile is : %s", savedFile.getPath());
 
         String url = baseURL + type + "/" + subDir + "/" + newName;
-        LoggerUtil.fmtInfo(CLASS, "savedFileURL is: ", url);
+        LoggerUtil.fmtInfo(CLASS, "savedFileURL is: %s", url);
         return url;
     }
 
@@ -141,7 +141,7 @@ public class FileUtil {
         filePath += type + "/" + subDir + "/";
         filePath += fileName;
 
-        LoggerUtil.fmtInfo(CLASS, "获取文件所在本地路径：", filePath);
+        LoggerUtil.fmtInfo(CLASS, "获取文件所在本地路径：%s", filePath);
         File file = new File(filePath);
         return file.delete();
     }
